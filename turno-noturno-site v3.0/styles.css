@@ -1,0 +1,620 @@
+/* ============================================
+   TURNO NOTURNO — identidade visual
+   Paleta: visão noturna verde-ciano sobre preto,
+   como as câmeras de segurança do próprio jogo.
+   ============================================ */
+
+:root {
+  --bg: #050907;
+  --panel: #081512;
+  --panel-2: #0c1c17;
+  --phosphor: #52ffd8;
+  --phosphor-dim: #1f6b56;
+  --phosphor-soft: rgba(82, 255, 216, 0.12);
+  --alert: #ff7a45;
+  --alert-dim: #7a3b22;
+  --text: #cdf5ea;
+  --text-dim: #6f9c8f;
+  --border: rgba(82, 255, 216, 0.35);
+
+  --font-display: 'Chakra Petch', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { color-scheme: dark; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ---------- efeitos de CRT ---------- */
+
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.18) 3px
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 49;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%);
+}
+
+/* grão fino, tipo ruído de câmera analógica */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 47;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes flicker {
+  0%, 96%, 100% { opacity: 1; }
+  97% { opacity: 0.82; }
+  98% { opacity: 1; }
+  99% { opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .monitor-frame { animation: flicker 9s infinite; }
+}
+
+/* ---------- nav de câmeras ---------- */
+
+.cam-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 14px 16px 0;
+  max-width: 1040px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.cam-tab {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--text-dim);
+  background: var(--panel);
+  border: 1px solid rgba(82, 255, 216, 0.15);
+  border-radius: 4px;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.cam-tab-num {
+  color: var(--phosphor-dim);
+  margin-right: 4px;
+}
+
+.cam-tab:hover {
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.cam-tab:focus-visible,
+.btn:focus-visible,
+.repo-link:focus-visible {
+  outline: 2px solid var(--phosphor);
+  outline-offset: 2px;
+}
+
+.cam-tab.is-active {
+  color: var(--bg);
+  background: var(--phosphor);
+  border-color: var(--phosphor);
+}
+
+.cam-tab.is-active .cam-tab-num {
+  color: rgba(5, 9, 7, 0.55);
+}
+
+/* ---------- moldura do monitor ---------- */
+
+.monitor {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.monitor-frame {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(82,255,216,0.08), transparent 60%),
+    var(--panel);
+  padding: 0 0 56px;
+  min-height: 560px;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(82, 255, 216, 0.06) inset;
+}
+
+/* ---------- cantos de mira, tipo overlay de câmera de segurança ---------- */
+
+.corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.corner-tl { top: 10px; left: 10px; border-top: 2px solid var(--phosphor); border-left: 2px solid var(--phosphor); }
+.corner-tr { top: 10px; right: 10px; border-top: 2px solid var(--phosphor); border-right: 2px solid var(--phosphor); }
+.corner-bl { bottom: 10px; left: 10px; border-bottom: 2px solid var(--phosphor); border-left: 2px solid var(--phosphor); }
+.corner-br { bottom: 10px; right: 10px; border-bottom: 2px solid var(--phosphor); border-right: 2px solid var(--phosphor); }
+
+/* faixa de interferência que varre o monitor de vez em quando */
+.glitch-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+  top: -40px;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(82,255,216,0.06), transparent);
+  mix-blend-mode: screen;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .glitch-sweep { animation: sweep 11s ease-in-out infinite; }
+}
+
+@keyframes sweep {
+  0% { top: -40px; }
+  38% { top: -40px; }
+  46% { top: 105%; }
+  100% { top: 105%; }
+}
+
+/* fundo com a própria captura de tela da seção, bem apagado */
+.bg-shot {
+  position: relative;
+  z-index: 1;
+}
+
+.bg-shot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.16;
+  filter: saturate(0.7);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 78%);
+          mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 78%);
+}
+
+.bg-shot--01::before { background-image: url("assets/screenshots/cam-01-ala-descanso.png"); }
+.bg-shot--02::before { background-image: url("assets/screenshots/cam-02-corredor.png"); }
+.bg-shot--03::before { background-image: url("assets/screenshots/cam-03-quarto.png"); }
+.bg-shot--04::before { background-image: url("assets/screenshots/cam-04-patio.png"); }
+
+.monitor-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(82, 255, 216, 0.15);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+
+.rec {
+  color: var(--alert);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.rec-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--alert);
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rec-dot { animation: pulse 1.6s infinite; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+/* ---------- seções (telas de câmera) ---------- */
+
+.cam-view {
+  display: none;
+  padding: 48px 40px 40px;
+}
+
+.cam-view.is-active {
+  display: block;
+  animation: view-in 0.4s ease both;
+}
+
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cam-view.is-active { animation: none; }
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--phosphor-dim);
+  margin: 0 0 18px;
+  text-transform: uppercase;
+}
+
+.game-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(48px, 9vw, 96px);
+  line-height: 0.94;
+  letter-spacing: 0.01em;
+  margin: 0 0 14px;
+  color: var(--phosphor);
+  text-shadow: 0 0 24px rgba(82, 255, 216, 0.35);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 46px);
+  margin: 0 0 14px;
+  color: var(--phosphor);
+  text-shadow: 0 0 18px rgba(82, 255, 216, 0.25);
+}
+
+.tagline {
+  font-size: 16px;
+  color: var(--text);
+  margin: 0 0 20px;
+  font-weight: 500;
+}
+
+.lede {
+  max-width: 620px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  margin: 0 0 32px;
+}
+
+/* ---------- barra de estabilidade decorativa ---------- */
+
+.vitals {
+  max-width: 320px;
+  margin: 0 0 32px;
+}
+
+.vitals-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.vitals-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.vitals-status {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.vitals-status--ok { color: var(--phosphor); }
+
+.vitals-track {
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(82, 255, 216, 0.1);
+  overflow: hidden;
+}
+
+.vitals-fill {
+  height: 100%;
+  width: 78%;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--phosphor-dim), var(--phosphor));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vitals-fill { animation: vitals-breathe 4s ease-in-out infinite; }
+}
+
+@keyframes vitals-breathe {
+  0%, 100% { width: 74%; }
+  50% { width: 82%; }
+}
+
+.cta-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  padding: 13px 22px;
+  border-radius: 4px;
+  border: 1px solid var(--phosphor);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+
+.btn:hover { transform: translateY(-1px); }
+
+.btn-primary {
+  background: var(--phosphor);
+  color: var(--bg);
+  box-shadow: 0 0 0 rgba(82,255,216,0.4);
+}
+
+.btn-primary:hover {
+  background: #7dffe2;
+  box-shadow: 0 0 22px rgba(82,255,216,0.35);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--phosphor);
+}
+
+.btn-ghost:hover { background: var(--phosphor-soft); }
+
+.btn-lg {
+  padding: 16px 28px;
+  font-size: 15px;
+}
+
+/* ---------- lista de protocolo ---------- */
+
+.protocol-list {
+  list-style: none;
+  margin: 0 0 28px;
+  padding: 0;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.protocol-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--text);
+  border-bottom: 1px solid rgba(82, 255, 216, 0.1);
+  padding-bottom: 12px;
+}
+
+.protocol-num {
+  font-family: var(--font-display);
+  color: var(--phosphor-dim);
+  font-weight: 700;
+  font-size: 15px;
+  min-width: 28px;
+}
+
+.controls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 12px;
+  color: var(--text-dim);
+  border-top: 1px dashed rgba(82, 255, 216, 0.2);
+  padding-top: 18px;
+}
+
+kbd {
+  font-family: var(--font-mono);
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 6px;
+  color: var(--phosphor);
+  font-size: 11px;
+}
+
+/* ---------- galeria de capturas ---------- */
+
+.shot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+.shot-card {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--panel-2);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shot-card:hover {
+  border-color: var(--phosphor);
+  box-shadow: 0 0 24px rgba(82,255,216,0.18);
+}
+
+.shot-card img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  filter: saturate(1.05);
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.shot-card:hover img {
+  transform: scale(1.04);
+  filter: saturate(1.15);
+}
+
+.shot-card figcaption {
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+.shot-tag {
+  display: inline-block;
+  color: var(--phosphor);
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+/* ---------- download ---------- */
+
+.download-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 22px 24px;
+  margin-bottom: 18px;
+  max-width: 640px;
+}
+
+.download-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.download-version {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--phosphor);
+  font-weight: 700;
+}
+
+.download-req {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.repo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 13px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.repo-link:hover {
+  color: var(--phosphor);
+  border-color: var(--phosphor-dim);
+}
+
+/* ---------- barra de status ---------- */
+
+.status-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(5, 9, 7, 0.75);
+  backdrop-filter: blur(2px);
+  border-top: 1px solid rgba(82, 255, 216, 0.15);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.status-item--center { text-align: center; }
+.status-item--right { text-align: right; }
+
+.status-label {
+  color: var(--phosphor-dim);
+  font-size: 10px;
+}
+
+.status-value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ---------- responsivo ---------- */
+
+@media (max-width: 640px) {
+  .cam-view { padding: 32px 20px 32px; }
+  .status-bar {
+    position: static;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .status-item--center, .status-item--right { text-align: left; }
+  .monitor-frame { padding-bottom: 20px; }
+  .download-card { flex-direction: column; align-items: flex-start; }
+}

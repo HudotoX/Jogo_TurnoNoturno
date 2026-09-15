@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TURNO NOTURNO — jogo de terror</title>
+<meta name="description" content="Turno Noturno — jogo de terror. Você é a cientista de plantão num hospital psiquiátrico desativado. Monitore as câmeras. Não confie no que elas mostram.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23050907'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%2352ffd8' stroke-width='2.4'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%2352ffd8'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ruído de scanline sobre toda a página -->
+<div class="crt-overlay" aria-hidden="true"></div>
+<div class="grain-overlay" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- ====== NAV DE CÂMERAS (troca as seções) ====== -->
+<nav class="cam-tabs" role="tablist" aria-label="Navegação por câmeras">
+  <button class="cam-tab is-active" role="tab" aria-selected="true" data-target="cam-01">
+    <span class="cam-tab-num">1</span> CAM 01
+  </button>
+  <button class="cam-tab" role="tab" aria-selected="false" data-target="cam-02">
+    <span class="cam-tab-num">2</span> CAM 02
+  </button>
+  <button class="cam-tab" role="tab" aria-selected="false" data-target="cam-03">
+    <span class="cam-tab-num">3</span> CAM 03
+  </button>
+  <button class="cam-tab" role="tab" aria-selected="false" data-target="cam-04">
+    <span class="cam-tab-num">4</span> CAM 04
+  </button>
+</nav>
+
+<!-- ====== FRAME DO MONITOR (moldura persistente estilo câmera) ====== -->
+<main class="monitor">
+
+  <div class="monitor-frame">
+    <span class="corner corner-tl" aria-hidden="true"></span>
+    <span class="corner corner-tr" aria-hidden="true"></span>
+    <span class="corner corner-bl" aria-hidden="true"></span>
+    <span class="corner corner-br" aria-hidden="true"></span>
+    <div class="glitch-sweep" aria-hidden="true"></div>
+
+    <div class="monitor-topbar">
+      <span class="monitor-label" id="monitor-label">CAM 01 — Ala de Descanso</span>
+      <span class="rec"><span class="rec-dot" aria-hidden="true"></span>REC</span>
+    </div>
+
+    <!-- ---------- SEÇÃO 1 — SOBRE ---------- -->
+    <section class="cam-view is-active bg-shot bg-shot--01" id="cam-01">
+      <p class="eyebrow">SISTEMA DE MONITORAMENTO — ATIVO</p>
+      <h1 class="game-title">TURNO<br>NOTURNO</h1>
+      <p class="tagline">Um jogo de terror e vigilância.</p>
+      <p class="lede">
+        Você acaba de assumir o turno da noite num hospital psiquiátrico desativado.
+        Sua função é simples: observar os pacientes pelas câmeras de segurança e manter
+        os protocolos em dia. Só que, aqui dentro, os pacientes não dormem — e nem sempre
+        se movem por conta própria.
+      </p>
+
+      <div class="vitals" aria-hidden="true">
+        <div class="vitals-row">
+          <span class="vitals-label">ESTABILIDADE — VOCÊ</span>
+          <span class="vitals-status vitals-status--ok">NORMAL</span>
+        </div>
+        <div class="vitals-track"><div class="vitals-fill"></div></div>
+      </div>
+
+      <div class="cta-row">
+        <button class="btn btn-primary" data-goto="cam-04">Baixar o jogo</button>
+        <button class="btn btn-ghost" data-goto="cam-03">Ver capturas de tela →</button>
+      </div>
+    </section>
+
+    <!-- ---------- SEÇÃO 2 — MECÂNICAS ---------- -->
+    <section class="cam-view bg-shot bg-shot--02" id="cam-02">
+      <p class="eyebrow">CAM 02 — CORREDOR CENTRAL</p>
+      <h2 class="section-title">PROTOCOLO DE VIGÍLIA</h2>
+      <p class="lede">Cada noite segue as mesmas regras. Elas só ficam mais difíceis de cumprir.</p>
+
+      <ol class="protocol-list">
+        <li><span class="protocol-num">01</span>Alterne entre as câmeras e observe cada leito com atenção.</li>
+        <li><span class="protocol-num">02</span>Acompanhe as leituras de sinal de cada paciente.</li>
+        <li><span class="protocol-num">03</span>Responda aos chamados antes que a instabilidade suba demais.</li>
+        <li><span class="protocol-num">04</span>Cuidado com interferências — nem toda falha de imagem é só falha técnica.</li>
+        <li><span class="protocol-num">05</span>Resista até o fim do turno.</li>
+      </ol>
+
+      <div class="controls-bar">
+        <span><kbd>Setas</kbd>/<kbd>A-D</kbd> câmera</span>
+        <span><kbd>1</kbd>/<kbd>2</kbd> protocolo</span>
+        <span><kbd>R</kbd> responder chamado</span>
+        <span><kbd>ESC</kbd> pausar</span>
+      </div>
+    </section>
+
+    <!-- ---------- SEÇÃO 3 — CAPTURAS ---------- -->
+    <section class="cam-view bg-shot bg-shot--03" id="cam-03">
+      <p class="eyebrow">CAM 03 — REGISTROS</p>
+      <h2 class="section-title">O QUE AS CÂMERAS VIRAM</h2>
+
+      <div class="shot-grid">
+        <figure class="shot-card">
+          <img src="assets/screenshots/cam-01-ala-descanso.png" alt="Câmera 1 — Ala de Descanso, com camas hospitalares e um paciente parado ao centro da sala">
+          <figcaption><span class="shot-tag">CAM 01</span> Ala de Descanso — Paciente 01, sinal normal. Por enquanto.</figcaption>
+        </figure>
+        <figure class="shot-card">
+          <img src="assets/screenshots/cam-02-corredor.png" alt="Câmera 2 — Corredor Central vazio, com portas de quartos dos dois lados">
+          <figcaption><span class="shot-tag">CAM 02</span> Corredor Central — sem sinal do Paciente 02. Interferência momentânea registrada.</figcaption>
+        </figure>
+        <figure class="shot-card">
+          <img src="assets/screenshots/cam-03-quarto.png" alt="Câmera 3 — Quarto de observação, com cama, cadeira e um vidro espelhado dando pra sala de controle">
+          <figcaption><span class="shot-tag">CAM 03</span> Sala de Observação — vidro espelhado. Alguém do outro lado, talvez.</figcaption>
+        </figure>
+        <figure class="shot-card">
+          <img src="assets/screenshots/cam-04-patio.png" alt="Câmera 4 — Pátio interno vazio, com bancos de metal sob uma luminária">
+          <figcaption><span class="shot-tag">CAM 04</span> Pátio Interno — vazio. Como sempre está. Supostamente.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ---------- SEÇÃO 4 — DOWNLOAD ---------- -->
+    <section class="cam-view bg-shot bg-shot--04" id="cam-04">
+      <p class="eyebrow">CAM 04 — PÁTIO INTERNO</p>
+      <h2 class="section-title">FIM DE TURNO</h2>
+      <p class="lede">
+        O jogo está em desenvolvimento. Baixe a versão mais recente, entre no hospital
+        e não confie em tudo que a câmera mostra.
+      </p>
+
+      <div class="download-card">
+        <div class="download-info">
+          <span class="download-version">VERSÃO 0.1 · NOITE 3</span>
+          <span class="download-req">Requer Python + Pygame · Windows / Linux / macOS</span>
+        </div>
+        <!-- EDITAR: troque o href abaixo pelo link do seu Release no GitHub -->
+        <a class="btn btn-primary btn-lg" href="#" id="download-link">⭳ Baixar Turno Noturno</a>
+      </div>
+
+      <!-- EDITAR: troque o href abaixo pelo link do seu repositório -->
+      <a class="repo-link" href="https://github.com/HudotoX/Jogo_TurnoNoturno.git" id="repo-link">
+        <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        Ver código no GitHub
+      </a>
+    </section>
+
+    <!-- ====== BARRA DE STATUS INFERIOR ====== -->
+    <footer class="status-bar">
+      <div class="status-item">
+        <span class="status-label">TEMPO DE SESSÃO</span>
+        <span class="status-value" id="session-timer">00:00</span>
+      </div>
+      <div class="status-item status-item--center">
+        <span class="status-label">EQUIPE</span>
+        <!-- EDITAR: coloque o nome da equipe/disciplina aqui -->
+        <span class="status-value">[nome da equipe]</span>
+      </div>
+      <div class="status-item status-item--right">
+        <span class="status-label">← → navegar câmeras</span>
+      </div>
+    </footer>
+
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

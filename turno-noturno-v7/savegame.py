@@ -13,9 +13,18 @@ impedir o jogo de abrir.
 
 import json
 import os
+import sys
 import settings as cfg
 
-SAVE_PATH = os.path.join(os.path.dirname(__file__), cfg.SAVE_FILE_NAME)
+
+def _application_dir():
+    """Pasta persistente tanto no código-fonte quanto no executável."""
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(__file__)
+
+
+SAVE_PATH = os.path.join(_application_dir(), cfg.SAVE_FILE_NAME)
 
 DEFAULT_PROGRESS = {"unlocked_night": 1}
 

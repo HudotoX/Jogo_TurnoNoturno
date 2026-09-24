@@ -19,6 +19,8 @@ class EventManager:
         self._next_index = 0
         self.log_messages = []  # (texto, tempo_de_exibicao_restante)
         self.final_event_triggered = False
+        self.records = []
+        self.dialogues = []
 
     # ------------------------------------------------------------------
     def game_minutes_elapsed(self, night_elapsed_seconds):
@@ -45,13 +47,16 @@ class EventManager:
 
         if etype == "light_flicker":
             audio.play_flicker()
+            audio.play_knocks()
             self._flicker_hold = 1.2
+            self.dialogues.append((1, "A luz piscou de novo. Foram três batidas no corredor. Você ouviu também?"))
 
         elif etype == "patient_move":
             pid = payload.get("patient_id")
             patient = self._find_patient(patients, pid)
             if patient:
-                patient.move_to_random_room(camera_system.cameras)
+                if not patient.move_to_random_room(cfg.PATIENT_ROOMS):
+                    return
                 audio.play_blip()
 
         elif etype == "camera_interference":
@@ -66,6 +71,7 @@ class EventManager:
                 patient.trigger_glitch(duration=7.0)
                 patient.trigger_crisis(multiplier=1.6, duration=10.0)
                 audio.play_alert_soft()
+                self.dialogues.append((pid, "Vi uma sombra perto da porta. Pode conferir?"))
 
         elif etype == "false_alarm":
             # visual e som IDÊNTICOS ao anomaly_sighting, mas sem acelerar o
@@ -75,16 +81,10 @@ class EventManager:
             patient = self._find_patient(patients, pid)
             if patient:
                 patient.trigger_glitch(duration=5.0)
-                patient.stability = max(0.0, patient.stability - cfg.FALSE_ALARM_STABILITY_COST)
-                patient._recompute_state()
+                patient.apply_loss(cfg.FALSE_ALARM_STABILITY_COST,
+                                   "A queda de estabilidade após um alarme zerou a barra.")
                 audio.play_alert_soft()
-
-        elif etype == "patient_call":
-            pid = payload.get("patient_id")
-            patient = self._find_patient(patients, pid)
-            if patient:
-                patient.start_call(scripted=True)
-                audio.play_call_alert()
+                self.dialogues.append((pid, "Vi uma sombra perto da porta. Pode conferir?"))
 
         elif etype == "patient_disappear":
             pid = payload.get("patient_id")
@@ -103,6 +103,8 @@ class EventManager:
 
         elif etype == "special_event":
             audio.play_special()
+            audio.play_knocks()
+            camera_system.trigger_interference(duration=1.5, cam="CAM 02")
 
         elif etype == "final_event":
             self.final_event_triggered = True
@@ -111,6 +113,7 @@ class EventManager:
         text = EVENT_LOG_TEXT.get(etype, "")
         if text:
             self.log_messages.append([text, 6.0])
+            self.records.append((text, payload.get("patient_id")))
 
     @staticmethod
     def _find_patient(patients, pid):
